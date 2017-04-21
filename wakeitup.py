@@ -27,9 +27,10 @@ magic_word = os.environ.get("MAGIC_WORD", None)
 
 
 def scheduled_job():
-    url = "https://khcc-spider.herokuapp.com"
-    response = requests.post(url, data=magic_word, timeout=50)
-    logging.debug(response)
+    url = os.environ.get("URL", None)
+    if url:
+        response = requests.post(url, data=magic_word, timeout=50)
+        logging.debug(response)
 
 
 def get_next_run_time(is_refresh_run):
