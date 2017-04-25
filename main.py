@@ -77,7 +77,7 @@ next_run_time = get_next_run_time(True)
 sched = BackgroundScheduler(timezone=TZ)
 sched.start()
 
-ka_job = sched.add_job(keepalive_job, trigger="interval", minutes=1)
+ka_job = sched.add_job(keepalive_job, trigger="interval", minutes=29)
 
 while True:
     jobs=sched.get_jobs()
