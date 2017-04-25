@@ -35,11 +35,19 @@ def wakeup(URLS):
 
 
 def keepalive_job():
-    wakeup("KA_URLS")
+    urls = os.environ.get("KA_URLS", None)
+    for url in urls.split():
+        if url:
+            response = requests.head(url, timeout=50)
+            logging.debug("%s:%s:%s" % ("KA", url, response))
 
 
 def midnight_job():
-    wakeup("MN_URLS")
+    urls = os.environ.get("MN_URLS", None)
+    for url in urls.split():
+        if url:
+            response = requests.post(url, data=magic_word, timeout=50)
+            logging.debug("%s:%s:%s" % ("MN", url, response))
 
 
 def get_next_run_time(is_refresh_run):
