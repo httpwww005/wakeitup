@@ -93,6 +93,7 @@ while True:
 
     if not mn_job_exist:
         next_run_time = get_next_run_time(False)
+        logging.debug("next MN_JOB run time: %s" % next_run_time)
         mn_job = sched.add_job(midnight_job, next_run_time=next_run_time)
     
     time_diff = mn_job.next_run_time + timedelta(hours=next_check_hours) 
