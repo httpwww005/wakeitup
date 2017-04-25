@@ -31,17 +31,19 @@ mn_hosts = os.environ.get("MN_HOSTS", None)
 
 
 def keepalive_job():
-    for host in ka_hosts.split():
-        if host:
-            response = requests.head(url_pattern % host, timeout=50)
-            logging.debug("%s:%s:%s" % ("KA", host, response))
+    if ka_hosts:
+        for host in ka_hosts.split():
+            if host:
+                response = requests.head(url_pattern % host, timeout=50)
+                logging.debug("%s:%s:%s" % ("KA", host, response))
 
 
 def midnight_job():
-    for host in mn_hosts.split():
-        if host:
-            response = requests.post(url_pattern % host, data=magic_word, timeout=50)
-            logging.debug("%s:%s:%s" % ("KA", host, response))
+    if mn_hosts:
+        for host in mn_hosts.split():
+            if host:
+                response = requests.post(url_pattern % host, data=magic_word, timeout=50)
+                logging.debug("%s:%s:%s" % ("KA", host, response))
 
 
 def get_next_run_time(is_refresh_run):
