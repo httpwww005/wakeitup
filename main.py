@@ -26,11 +26,20 @@ TZ=pytz.timezone("Asia/Taipei")
 magic_word = os.environ.get("MAGIC_WORD", None)
 
 
-def scheduled_job():
-    url = os.environ.get("URL", None)
-    if url:
-        response = requests.post(url, data=magic_word, timeout=50)
-        logging.debug(response)
+def wakeup(URLS):
+    urls = os.environ.get(URLS, None)
+    for url in urls.split():
+        if url:
+            response = requests.post(url, data=magic_word, timeout=50)
+            logging.debug("%s:%s" % (url, response))
+
+
+def keepalive_job():
+    wakeup("KA_URLS")
+
+
+def midnight_job():
+    wakeup("MN_URLS")
 
 
 def get_next_run_time(is_refresh_run):
@@ -67,16 +76,24 @@ next_run_time = get_next_run_time(True)
 sched = BackgroundScheduler(timezone=TZ)
 sched.start()
 
+ka_job = sched.add_job(keepalive_job, trigger="interval", minutes=1)
 
 while True:
     jobs=sched.get_jobs()
-
-    if( len(jobs) < 1 ):
-        next_run_time = get_next_run_time(False)
-        job = sched.add_job(scheduled_job, next_run_time=next_run_time)
-        logging.debug("new job scheduled at time: %s" % job.next_run_time)
     
-    time_diff = job.next_run_time + timedelta(hours=next_check_hours) 
+    ka_job_exist = False
+
+    for job in jobs:
+        if job.name == "midnight_job":
+            ka_job_exist = True
+            break
+
+    if not ka_job_exist:
+        next_run_time = get_next_run_time(False)
+        mn_job = sched.add_job(midnight_job, next_run_time=next_run_time)
+        logging.debug("new job scheduled at time: %s" % mn_job.next_run_time)
+    
+    time_diff = mn_job.next_run_time + timedelta(hours=next_check_hours) 
     sleep_seconds = next_check_hours * 60 * 60
     logging.debug("next check time: %s" % time_diff)
     sleep(sleep_seconds)

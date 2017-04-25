@@ -1,1 +1,1 @@
-wakeitup: python wakeitup.py
+main: python main.py
