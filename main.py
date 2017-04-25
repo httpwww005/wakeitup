@@ -58,7 +58,6 @@ def get_next_run_time(is_refresh_run):
         start_time = datetime(next_run_time.year,next_run_time.month,next_run_time.day,hour_start,minute_start,tzinfo=TZ)
         end_time = start_time.replace(hour=hour_end, minute=minute_end)
     
-        logging.debug("next_run_time: %s" % next_run_time)
         if start_time <= now <= end_time:
             logging.debug("now in between")
             next_run_time_ = now + timedelta(minutes=in_between_delay_minute)
