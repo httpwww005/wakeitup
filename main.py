@@ -24,30 +24,23 @@ logging.basicConfig(format='%(filename)s:%(levelname)s:%(message)s', level=loggi
 
 TZ=pytz.timezone("Asia/Taipei")
 magic_word = os.environ.get("MAGIC_WORD", None)
-
-
-def wakeup(URLS):
-    urls = os.environ.get(URLS, None)
-    for url in urls.split():
-        if url:
-            response = requests.post(url, data=magic_word, timeout=50)
-            logging.debug("%s:%s" % (url, response))
+url_pattern = "https://%s.herokuapp.com"
 
 
 def keepalive_job():
-    urls = os.environ.get("KA_URLS", None)
-    for url in urls.split():
-        if url:
-            response = requests.head(url, timeout=50)
-            logging.debug("%s:%s:%s" % ("KA", url, response))
+    hosts = os.environ.get("KA_HOSTS", None)
+    for host in hosts.split():
+        if host:
+            response = requests.head(url_pattern % host, timeout=50)
+            logging.debug("%s:%s:%s" % ("KA", host, response))
 
 
 def midnight_job():
-    urls = os.environ.get("MN_URLS", None)
-    for url in urls.split():
-        if url:
-            response = requests.post(url, data=magic_word, timeout=50)
-            logging.debug("%s:%s:%s" % ("MN", url, response))
+    hosts = os.environ.get("MN_HOSTS", None)
+    for host in hosts.split():
+        if host:
+            response = requests.post(url_pattern % host, data=magic_word, timeout=50)
+            logging.debug("%s:%s:%s" % ("KA", host, response))
 
 
 def get_next_run_time(is_refresh_run):
