@@ -26,18 +26,19 @@ TZ=pytz.timezone("Asia/Taipei")
 magic_word = os.environ.get("MAGIC_WORD", None)
 url_pattern = "https://%s.herokuapp.com"
 
+ka_hosts = os.environ.get("KA_HOSTS", None)
+mn_hosts = os.environ.get("MN_HOSTS", None)
+
 
 def keepalive_job():
-    hosts = os.environ.get("KA_HOSTS", None)
-    for host in hosts.split():
+    for host in ka_hosts.split():
         if host:
             response = requests.head(url_pattern % host, timeout=50)
             logging.debug("%s:%s:%s" % ("KA", host, response))
 
 
 def midnight_job():
-    hosts = os.environ.get("MN_HOSTS", None)
-    for host in hosts.split():
+    for host in mn_hosts.split():
         if host:
             response = requests.post(url_pattern % host, data=magic_word, timeout=50)
             logging.debug("%s:%s:%s" % ("KA", host, response))
@@ -75,6 +76,7 @@ next_run_time = get_next_run_time(True)
 sched = BackgroundScheduler(timezone=TZ)
 sched.start()
 
+keepalive_job()
 ka_job = sched.add_job(keepalive_job, trigger="interval", minutes=29)
 
 while True:
