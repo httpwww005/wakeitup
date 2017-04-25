@@ -56,8 +56,6 @@ def get_next_run_time(is_refresh_run):
         end_time = start_time.replace(hour=hour_end, minute=minute_end)
     
         logging.debug("next_run_time: %s" % next_run_time)
-        logging.debug("start_time: %s" % start_time)
-        logging.debug("end_time: %s" % end_time)
         if start_time <= now <= end_time:
             logging.debug("now in between")
             next_run_time_ = now + timedelta(minutes=in_between_delay_minute)
@@ -82,17 +80,16 @@ ka_job = sched.add_job(keepalive_job, trigger="interval", minutes=29)
 while True:
     jobs=sched.get_jobs()
     
-    ka_job_exist = False
+    mn_job_exist = False
 
     for job in jobs:
         if job.name == "midnight_job":
-            ka_job_exist = True
+            mn_job_exist = True
             break
 
-    if not ka_job_exist:
+    if not mn_job_exist:
         next_run_time = get_next_run_time(False)
         mn_job = sched.add_job(midnight_job, next_run_time=next_run_time)
-        logging.debug("new job scheduled at time: %s" % mn_job.next_run_time)
     
     time_diff = mn_job.next_run_time + timedelta(hours=next_check_hours) 
     sleep_seconds = next_check_hours * 60 * 60
